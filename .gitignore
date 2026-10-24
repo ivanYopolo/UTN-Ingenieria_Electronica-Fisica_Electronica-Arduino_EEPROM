@@ -1,0 +1,31 @@
+# EJECUTABLES #
+*.bin
+*.out
+*.
+*.[oa] 
+
+# COMPRIMIDOS #
+*.rar
+*.zip
+*.tar
+
+# DATA + DUMP + LOGS #
+*.txt
+*.log
+*.save
+*.swp
+*.data
+*.dat
+
+# BASURA WSL (WINDOWS) #
+*.Identifier
+
+# VS/VS CODE #
+*.json
+
+# CORE DUMPS#
+*.cdump
+
+# OTROS #
+*.xml
+*.h.gch
