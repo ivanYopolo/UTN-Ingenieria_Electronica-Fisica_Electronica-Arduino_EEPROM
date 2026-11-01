@@ -24,11 +24,6 @@
 /***************************
  *** PINOUT ***
  ***************************/
-// >> HC_SR04: Sensor ultrasónico
-#define __HC_SR04_TRIG_PORT			1
-#define __HC_SR04_TRIG_PIN			0
-#define __HC_SR04_ECHO_PORT			0
-#define __HC_SR04_ECHO_PIN			8
 
 // >> UART: comunicación asíncrona
 #define __UART_TX_PORT				0
@@ -51,10 +46,9 @@
  * ### VARIABLES GLOBALES PRIVADAS ###
  * ########################################### */
 CTimer ctimerObject( __CTIMER_PRESCALER_FREQ );
-Uart serialCOMS_LPC_ESP( __UART_TX_PORT, __UART_TX_PIN, __UART_RX_PORT, __UART_RX_PIN, __UART_USART_x,
-				__UART_BAUDRATE, Uart::bits_de_datos::ocho_bits, Uart::paridad_t::NoParidad,
-				__UART_MAX_RX, __UART_MAX_TX );
-//GPIO lpcLED( GPIO::puertos_e::PORT1, 1, GPIO::direccion_e::SALIDA, GPIO::actividad_e::BAJO );
+Uart serialCOMS_LPC( __UART_TX_PORT, __UART_TX_PIN, __UART_RX_PORT, __UART_RX_PIN, __UART_USART_x,
+					 __UART_BAUDRATE, Uart::bits_de_datos::ocho_bits, Uart::paridad_t::NoParidad,
+					 __UART_MAX_RX, __UART_MAX_TX );
 
 
 /* ###########################################
@@ -82,6 +76,9 @@ Uart serialCOMS_LPC_ESP( __UART_TX_PORT, __UART_TX_PIN, __UART_RX_PORT, __UART_R
 void Inicializar() {
 //	 ### Systick ###
 	SysTick_Config( 1 );
+
+	// ### FLASH ###
+	Init_Flash_Write();
 }
 
 

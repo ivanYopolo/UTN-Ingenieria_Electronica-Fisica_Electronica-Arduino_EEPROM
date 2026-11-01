@@ -1,28 +1,27 @@
 /*********************************************
  *
- * ### TPO: Mars Rover - Grupo 6 ###
- * ## Informática II - R2002 - CL2026 ##
+ * ### Irradiación de Memoria en CONEA ###
+ * ## Física Electrónica - R2521 - CL2026 ##
  *
- * @brief           Prueba de interrupciones externas. + Práctica de
- * 					timers en secuencia.
+ * @brief           Código de escritura en memoria FLASH
+ * 					y lectura constante en la misma.
  *
- * @author			Francisco Juanes
- * 					Mateo Román
+ * @author			Enrique Stutz
  * 					Iván Yopolo
  *
  *********************************************/
-//
+
 #include "Aplicacion/inicializar.h"
 
-//Intext pulsadorInterExt;
 
 int main( void ) {
 
 	Inicializar();
 
     while ( 1 ) {
+    	// Aplicar timers...
+    	Check_Timer_Events();
     }
-
 
 
     return 0;

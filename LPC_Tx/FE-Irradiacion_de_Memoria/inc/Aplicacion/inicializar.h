@@ -23,6 +23,7 @@
 	#include "Drivers/Systick/systick.h"
 	#include "Drivers/LPC845.h"
 	#include "Drivers/C-Timer/c_timer.h"
+	#include "Aplicacion/flash_management.h"
 
 
     /* ###########################################
@@ -35,7 +36,8 @@
      * ### VARIABLES GLOBALES PÚBLICAS ###
      * ########################################### */
 	extern CTimer ctimerObject;
-	extern Uart serialCOMS_LPC_ESP;
+	extern Uart serialCOMS_LPC;
+	extern Timer timer_Tx;
 
 
     /* ###########################################
