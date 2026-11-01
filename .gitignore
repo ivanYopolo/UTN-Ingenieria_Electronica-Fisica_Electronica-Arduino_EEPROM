@@ -23,8 +23,13 @@
 # VS/VS CODE #
 *.json
 
-# CORE DUMPS#
+# CORE DUMPS #
 *.cdump
+
+# MCUXPRESSO IDE #
+**/.mcuxpressoide_packages_support/*
+**/.mcuxpressoide_packages_support/info.properties
+**/.metadata
 
 # OTROS #
 *.xml

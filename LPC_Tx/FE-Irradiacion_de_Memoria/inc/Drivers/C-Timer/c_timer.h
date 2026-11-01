@@ -1,0 +1,162 @@
+/*********************************************
+ *
+ * ### c_timer.h ###
+ * 
+ * @brief           Drivers del periférico CTimer del LPC845.
+ * @date            Aug 25, 2026
+ * @author          iyopolo
+ *
+ *********************************************/
+
+
+#ifndef         DRIVERS_C_TIMER_C_TIMER_H_
+    #define     DRIVERS_C_TIMER_C_TIMER_H_
+
+//	#include "Drivers/C-Timer/c_timer.h"
+
+    /* ###########################################
+     * ### INCLUDES GLOBALES ###
+     * ########################################### */
+	#include "Drivers/LPC845.h"
+	#include "Drivers/tipos.h"
+	#include "Drivers/SwitchMatrix/swm.h"
+	#include "Drivers/IOCON/iocon.h"
+	#include "Modulos/includeModulos.h"
+
+
+    /* ###########################################
+     * ### MACROS & TIPOS DE DATOS GLOBALES ###
+     * ########################################### */
+
+	#define	CTIMER_DEFAULT_FREQ		1000000		// MHz = 10^6 Hz
+	#define	MAT_PERIOD_DEFAULT		10			// us  = 10^(-6) s
+
+
+    /* ###########################################
+     * ### VARIABLES GLOBALES PÚBLICAS ###
+     * ########################################### */
+    //
+
+
+    /* ###########################################
+     * ### PROTOTIPOS DE FUNCIONES PÚBLICAS ###
+     * ########################################### */
+
+	#if defined (__cplusplus)
+		extern "C" {
+			void CTIMER0_IRQHandler();
+		}
+	#endif
+
+
+    /* ###########################################
+     * ### DEFINICIONES DE CLASES ###
+     * ########################################### */
+
+    class CTimer {
+    	// ## Variables ##
+    	private:
+			typedef struct MAT_data_s {
+				int16_t				port;
+				int16_t				pin;
+				uint32_t			totalPeriod;
+				bool				isPWM;
+				volatile void		(*__callback)();
+			} MAT_data_t;
+
+			typedef struct CAP_data_s {
+				int16_t				port;
+				int16_t				pin;
+				volatile void		(*__callback)();
+			} CAP_data_t;
+
+    	public:
+    		static MAT_data_t	__MAT[__CTimer_MAX_MR];
+    		static CAP_data_t	__CAP[__CTimer_MAX_CR];
+
+    		// # Valores posibles para el CCR, por canal #
+    		typedef enum CCRtriggers_e {
+    			RISING_CCR = 0,
+    			FALLING_CCR,
+    			INTERRUPT_CCR
+    		} CCRtriggers_t;
+
+    		// # Valores posibles para el MCR, por canal #
+    		typedef enum MCRtriggers_e {
+    			INTERRUPT_MCR = 0,
+    			RESET_MCR,
+    			STOP_MCR
+    		} MCRtriggers_t;
+
+    		typedef enum CTCR_TimerCounter_Mode_e {
+    			TIMER_MODE = 0x0,
+				COUNTER_RISING_MODE,
+				COUNTER_FALLING_MODE,
+				COUNTER_DUAL_MODE
+    		} CTCR_TimerCounter_Mode_t;
+
+    		typedef enum CTCR_Edge_e {
+    			CAP_RISING_EDGE = 0,
+    			CAP_FALLING_EDGE
+    		} CTCR_Edge_t;
+
+    		typedef enum EMR_Mode_e {
+    			EMR_NOTHING = 0,
+				EMR_CLEAR = 0x1,
+				EMR_SET = 0x2,
+				EMR_TOGGLE = 0x3
+    		} EMR_Demeanor_t;
+
+    		typedef enum registerSelection_MAT_CAP_e {
+    			MAT_REGISTER,
+				CAP_REGISTER
+    		} registerSelection_MAT_CAP_t;
+
+    	private:
+    		static bool			__isSetup;
+    		static uint8_t		__availableMATchannels;		// Valor neg (< 0) = sin espacio para canales MAT.
+    		static uint8_t		__availableCAPchannels;
+
+    		uint32_t			__ticksFrequency;
+
+
+		// ## Métodos ##
+//    	// private:
+
+    	public:
+						CTimer();
+						CTimer( uint32_t prescalerFrequency = CTIMER_DEFAULT_FREQ );
+			void 		Set_Callback( registerSelection_MAT_CAP_t registerSelection,
+									  uint8_t channel,  volatile void (* inputCallback)(void) );
+			int8_t 		SwitchMatrix_Config_MAT( uint8_t input_MATport, uint8_t input_MATpin, uint8_t channel );
+			int8_t 		SwitchMatrix_Config_CAP( uint8_t input_CAPport, uint8_t input_CAPpin, uint8_t channel );
+			void 		Set_PWM_MAT_channel( uint8_t channel, bool enable );
+			void		Set_PWM_totalPeriod( uint32_t totalPeriod );
+			void		Set_PWM_totalPeriod( uint8_t channel, uint32_t totalPeriod );
+			void		Set_PWM_onPeriod( uint8_t channel, uint8_t totalPeriod_channel, uint32_t onPeriod );
+			void		Set_PWM_onPeriod( uint8_t channel, uint32_t onPeriod );
+			int8_t 		Get_available_MAT_channel();
+			int8_t 		Get_available_CAP_channel();
+			void		Config_CountControlRegister( uint8_t					input_CAPchannel,
+					  	  	  	  	  	  	  	  	 CTCR_TimerCounter_Mode_t 	input_CTCRmode,
+													 bool 						clearTCwithCaptureEdge,
+													 CTCR_Edge_t 				input_Edge );
+			void 		Config_PrescalerFrequency( uint32_t prescalerFrequency );
+			void 		Config_MatchControlRegister( uint8_t			input_MATchannel,
+	  	  	  	  	  	 	 	 	 	 	MCRtriggers_t 	input_MCRmode,
+											 bool			bitValueMCR );
+			void 		Config_MatchShadow( uint8_t			input_MATchannel,
+											bool			reloadWithMatchShadow );
+			void		Config_CaptureControlRegister( uint8_t		input_CAPchannel,
+	  	 	 	 	 	  	  	  	  	  	 CCRtriggers_t 	inputCCRmode,
+					  	  	  	  	  	 	 bool 			bitValueCCR );
+			void		Config_ExternalMatchRegister( uint8_t input_MATchannel, EMR_Demeanor_t input_ExternalMatchDemeanor );
+			void 		Reset_Timer_Prescale();
+			void 		Enable_Timer_Prescale( bool input_EnableValue );
+		    uint32_t	GetCAPxValue( uint8_t channel ) const;
+			void 		SetMATxValue( uint8_t channel, uint32_t	input_MATvalue );
+			void  		SetMSRxValue( uint8_t channel, uint32_t	input_MSRvalue );
+    };
+
+
+#endif          /* DRIVERS_C_TIMER_C_TIMER_H_ */
